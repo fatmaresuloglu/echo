@@ -38,7 +38,26 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'gizli-anahtar', { expiresIn: '1h' });
 
     res.json({ message: "Giriş başarılı", token, user: { id: user.id, name: user.name } });
+  }  catch (error: any) {
+    console.error("!!! PRISMA HATASI !!!:", error); // Terminale hatayı detaylı basar
+    res.status(500).json({ error: "Giriş hatası", details: error.message });
+}
+
+};
+export const getProfile = async (req: any, res: Response) => {
+  try {
+    // authMiddleware sayesinde elimizde req.userId var
+    const userId = req.userId;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, name: true, createdAt: true } // Şifreyi güvenlik için göndermiyoruz!
+    });
+
+    if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı" });
+
+    res.json(user);
   } catch (error) {
-    res.status(500).json({ error: "Giriş yapılırken bir hata oluştu" });
+    res.status(500).json({ error: "Profil bilgileri alınırken hata oluştu" });
   }
 };

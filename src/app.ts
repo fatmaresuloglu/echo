@@ -4,10 +4,13 @@ import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 
+// 1. CORS ayarı (Frontend bağlantısı için)
 app.use(cors());
+
+// 2. JSON OKUYUCU (Bu satır olmazsa 'undefined' hatası alırsın!)
 app.use(express.json());
 
-// Tüm kullanıcı işlemlerini buraya yönlendiriyoruz
+// 3. ROTALAR
 app.use('/api/users', userRoutes);
 
 app.get('/ping', (req, res) => res.json({ message: "Sistem tertemiz!" }));
