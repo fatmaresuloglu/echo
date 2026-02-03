@@ -1,0 +1,42 @@
+// Veritabanı bağlantı ayarları
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Modellerin (Tabloların)
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Test {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  questions   Question[]
+}
+
+model Question {
+  id      Int      @id @default(autoincrement())
+  text    String
+  testId  Int
+  test    Test     @relation(fields: [testId], references: [id])
+  options Option[]
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  text       String
+  resultTag  String
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id])
+}
