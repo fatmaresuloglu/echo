@@ -16,4 +16,7 @@ app.use('/api/users', userRoutes);
 app.get('/ping', (req, res) => res.json({ message: "Sistem tertemiz!" }));
 
 const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Sunucu http://localhost:${PORT} adresinde yayında!`));
+// "0.0.0.0" ekleyerek yerel ağdaki (ve emülatördeki) her cihazın erişmesini sağla
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Sunucu tüm IP'lerden erişime açık: Port ${PORT}`);
+});
