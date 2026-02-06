@@ -16,6 +16,8 @@ model User {
   username  String   @unique
   name      String?
   password  String
+  bio      String?  @default("Henüz bir biyografi eklenmedi.")
+  posts     Post[]
   createdAt DateTime @default(now())
 }
 
@@ -40,4 +42,17 @@ model Option {
   resultTag  String
   questionId Int
   question   Question @relation(fields: [questionId], references: [id])
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  content   String   // Paylaşılan yazı
+  createdAt DateTime @default(now())
+  
+  // İlişkiler: Bir postun bir yazarı olur
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+
+  // Beğeni sayısı (Basit yöntem)
+  likeCount Int      @default(0)
 }

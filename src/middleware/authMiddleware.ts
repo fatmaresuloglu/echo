@@ -2,17 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export const authMiddleware = (req: any, res: Response, next: NextFunction) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const authHeader = req.header('Authorization');
+  const token = authHeader?.replace('Bearer ', '');
 
   if (!token) {
     return res.status(401).json({ error: 'Giriş kartın yok, giremezsin!' });
   }
 
   try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'gizli-anahtar');
-    req.userId = decoded.userId; // Kullanıcı ID'sini isteğe ekliyoruz
-    next(); // Fedai onay verdi, içeri geçebilirsin
+    // DİKKAT: Login'de 'fatma1234' kullandıysan burada da aynısı olmalı!
+   const decoded: any = jwt.verify(token, process.env.JWT_SECRET || 'fatma1234'); 
+  req.userId = decoded.userId;
+  next(); 
   } catch (error) {
-    res.status(401).json({ error: 'Geçersiz kart!' });
+    // Eğer buraya düşüyorsa token yanlıştır veya anahtar (secret) tutmuyordur
+    res.status(401).json({ error: 'Geçersiz veya süresi dolmuş kart!' });
   }
 };

@@ -44,7 +44,12 @@ export const login = async (req: Request, res: Response) => {
     res.json({ 
       message: "Giriş başarılı", 
       token, 
-      user: { id: Number(user.id), name: user.name, username: user.username } 
+      user: { 
+        id: Number(user.id), 
+        name: user.name, 
+        username: user.username,
+        bio: user.bio // Login olurken bio'yu da gönderelim
+      } 
     });
   } catch (error: any) {
     res.status(500).json({ error: "Giriş hatası" });
@@ -57,11 +62,45 @@ export const getProfile = async (req: any, res: Response) => {
     const userId = req.userId;
     const user = await prisma.user.findUnique({
       where: { id: Number(userId) },
-      select: { id: true, email: true, name: true, username: true, createdAt: true }
+      // bio alanını buraya ekledik ki profil ekranında görebil
+      select: { id: true, email: true, name: true, username: true, bio: true, createdAt: true }
     });
     if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı" });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: "Profil bilgileri alınamadı" });
+  }
+};
+
+// --- PROFİL GÜNCELLEME (UPDATE PROFILE) ---
+export const updateProfile = async (req: any, res: Response) => {
+  const { name, bio } = req.body;
+  const userId = req.userId;
+
+  if (!userId) return res.status(401).json({ error: "Yetkisiz erişim" });
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: Number(userId) },
+      data: { 
+        // Sadece gelen verileri güncelle, undefined ise dokunma
+        ...(name && { name }),
+        ...(bio !== undefined && { bio }),
+      },
+    });
+
+    res.json({ 
+      message: "Profil güncellendi", 
+      user: {
+        id: updatedUser.id,
+        name: updatedUser.name,
+        username: updatedUser.username,
+        bio: updatedUser.bio
+      }
+    });
+  } catch (error: any) {
+    console.error("GÜNCELLEME HATASI:", error);
+    // Eğer bio sütunu DB'de yoksa Prisma P2025 veya P2002 hatası verebilir
+    res.status(500).json({ error: "Güncelleme başarısız", details: error.message });
   }
 };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getProfile } from '../controllers/userController.js'; // 1. Buraya login'i ekle
+import { register, login, getProfile, updateProfile } from '../controllers/userController.js'; // 1. Buraya login'i ekle
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = Router();
@@ -11,4 +11,8 @@ router.post('/register', register);
 router.post('/login', login); 
 
 router.get('/profile', authMiddleware, getProfile);
+
+
+router.put('/update', authMiddleware, updateProfile);
+
 export default router;
