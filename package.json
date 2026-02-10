@@ -5,7 +5,6 @@
   "main": "src/app.ts",
   "scripts": {
     "dev": "nodemon --exec node --import tsx src/app.ts",
-    "seed": "node --loader ts-node/esm prisma/seed.ts",
     "build": "tsc"
   },
   "dependencies": {
